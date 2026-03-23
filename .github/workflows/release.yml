@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npm run package
+
+      - name: Upload Chrome ZIP to release
+        run: gh release upload ${{ github.event.release.tag_name }} dist/dl-tldv-chrome.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Firefox ZIP to release
+        run: gh release upload ${{ github.event.release.tag_name }} dist/dl-tldv-firefox.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-chrome:
+    needs: build
+    runs-on: ubuntu-latest
+    if: vars.CHROME_EXTENSION_ID != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci && npm run build && npm run package
+      - uses: browser-actions/release-chrome-extension@latest
+        with:
+          extension-id: ${{ vars.CHROME_EXTENSION_ID }}
+          extension-path: dist/dl-tldv-chrome.zip
+          oauth-client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          oauth-client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          oauth-refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+  publish-firefox:
+    needs: build
+    runs-on: ubuntu-latest
+    if: vars.FIREFOX_ADDON_ID != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci && npm run build && npm run package
+      - uses: browser-actions/release-firefox-addon@latest
+        with:
+          addon-id: ${{ vars.FIREFOX_ADDON_ID }}
+          addon-path: dist/dl-tldv-firefox.zip
+          auth-api-issuer: ${{ secrets.FIREFOX_API_ISSUER }}
+          auth-api-secret: ${{ secrets.FIREFOX_API_SECRET }}
