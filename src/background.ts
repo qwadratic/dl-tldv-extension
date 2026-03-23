@@ -2,19 +2,15 @@ import browser from "webextension-polyfill";
 import { fetchMeetingMetadata, fetchPlaylist } from "./pipeline/api";
 import { parsePlaylist } from "./pipeline/playlist";
 import { downloadSegments } from "./pipeline/downloader";
+import { remuxSegments } from "./pipeline/remux";
 import type {
   ExtensionMessage,
   ProgressMessage,
-  CompleteMessage,
   ErrorMessage,
+  RemuxProgressMessage,
+  RemuxCompleteMessage,
 } from "./types";
 import type { MeetingMetadata } from "./pipeline/types";
-
-// Store downloaded segments in memory for Phase 3 remuxing
-let lastDownloadResult: {
-  segments: ArrayBuffer[];
-  metadata: MeetingMetadata;
-} | null = null;
 
 browser.runtime.onInstalled.addListener(() => {
   console.log("[dl-tldv] Extension installed");
@@ -41,12 +37,18 @@ async function handleDownload(
     browser.tabs.sendMessage(senderTabId, msg);
   };
 
-  const sendComplete = (metadata: MeetingMetadata, segmentCount: number) => {
-    const msg: CompleteMessage = {
-      type: "DOWNLOAD_COMPLETE",
-      meetingName: metadata.name,
-      meetingDate: metadata.createdAt,
-      segmentCount,
+  const sendRemuxProgress = (stage: string) => {
+    const msg: RemuxProgressMessage = {
+      type: "REMUX_PROGRESS",
+      stage,
+    };
+    browser.tabs.sendMessage(senderTabId, msg);
+  };
+
+  const sendRemuxComplete = (filename: string) => {
+    const msg: RemuxCompleteMessage = {
+      type: "REMUX_COMPLETE",
+      filename,
     };
     browser.tabs.sendMessage(senderTabId, msg);
   };
@@ -80,14 +82,37 @@ async function handleDownload(
       `[dl-tldv] Download complete: ${result.segments.length} segments, ${(result.totalBytes / 1024 / 1024).toFixed(1)} MB`,
     );
 
-    // Store for Phase 3 remuxing
-    lastDownloadResult = {
-      segments: result.segments,
+    // Step 5: Remux segments into MP4
+    console.log("[dl-tldv] Starting remux...");
+    const { mp4Data, filename } = await remuxSegments(
+      result.segments,
       metadata,
-    };
+      sendRemuxProgress,
+    );
+    console.log(
+      `[dl-tldv] Remux complete: ${filename} (${(mp4Data.byteLength / 1024 / 1024).toFixed(1)} MB)`,
+    );
 
-    // Step 5: Signal completion
-    sendComplete(metadata, result.segments.length);
+    // Free segment memory now that remux is done
+    result.segments.length = 0;
+
+    // Step 6: Trigger browser download
+    const blob = new Blob([mp4Data.buffer as ArrayBuffer], { type: "video/mp4" });
+    const blobUrl = URL.createObjectURL(blob);
+
+    await browser.downloads.download({
+      url: blobUrl,
+      filename: filename,
+      saveAs: false,
+    });
+
+    console.log(`[dl-tldv] Download triggered: ${filename}`);
+
+    // Clean up blob URL after a delay (browser needs time to start the download)
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+
+    // Step 7: Signal completion to content script
+    sendRemuxComplete(filename);
   } catch (err) {
     const errorMsg =
       err instanceof Error ? err.message : "Unknown download error";

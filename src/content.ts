@@ -147,26 +147,55 @@ browser.runtime.onMessage.addListener((rawMessage: unknown) => {
   const message = rawMessage as ExtensionMessage;
   const btn = document.getElementById(BUTTON_ID) as HTMLButtonElement | null;
   if (!btn) return;
+  const span = btn.querySelector("span");
+  if (!span) return;
 
-  if (message.type === "DOWNLOAD_PROGRESS") {
-    if (message.total > 0) {
-      const pct = Math.round((message.current / message.total) * 100);
-      btn.querySelector("span")!.textContent =
-        `${message.current}/${message.total} (${pct}%)`;
+  switch (message.type) {
+    case "DOWNLOAD_PROGRESS":
+      if (message.total > 0) {
+        const pct = Math.round((message.current / message.total) * 100);
+        span.textContent = `${message.current}/${message.total} (${pct}%)`;
+      }
+      break;
+
+    case "DOWNLOAD_COMPLETE":
+      // Segments downloaded, remux starting soon
+      span.textContent = "Preparing remux...";
+      break;
+
+    case "REMUX_PROGRESS": {
+      // Map internal stage names to user-friendly labels
+      const stageLabels: Record<string, string> = {
+        loading: "Loading ffmpeg...",
+        writing: "Writing segments...",
+        remuxing: "Remuxing to MP4...",
+        reading: "Finalizing...",
+      };
+      span.textContent = stageLabels[message.stage] || `Remuxing (${message.stage})...`;
+      break;
     }
-  } else if (message.type === "DOWNLOAD_COMPLETE") {
-    btn.disabled = false;
-    btn.querySelector("span")!.textContent = "Done!";
-    btn.title = `Downloaded ${message.segmentCount} segments for "${message.meetingName}"`;
-    // Reset button text after 5 seconds
-    setTimeout(() => {
-      btn.querySelector("span")!.textContent = "Download";
-      btn.title = "Download meeting recording as MP4";
-    }, 5000);
-  } else if (message.type === "DOWNLOAD_ERROR") {
-    btn.disabled = false;
-    btn.querySelector("span")!.textContent = "Error";
-    btn.title = message.error;
+
+    case "REMUX_COMPLETE":
+      btn.disabled = false;
+      span.textContent = "Downloaded!";
+      btn.title = `Saved as ${message.filename}`;
+      // Reset button after 8 seconds
+      setTimeout(() => {
+        span.textContent = "Download";
+        btn.title = "Download meeting recording as MP4";
+      }, 8000);
+      break;
+
+    case "DOWNLOAD_ERROR":
+      btn.disabled = false;
+      span.textContent = "Error";
+      btn.title = message.error;
+      // Allow retry after 5 seconds
+      setTimeout(() => {
+        span.textContent = "Retry";
+        btn.title = "Click to retry download";
+      }, 5000);
+      break;
   }
 });
 
