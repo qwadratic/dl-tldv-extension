@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { sanitizeName, buildFilename } from "../src/pipeline/filename";
 
 describe("sanitizeName", () => {

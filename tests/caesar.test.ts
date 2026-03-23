@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { caesarDecipher } from "../src/pipeline/caesar";
 
 describe("caesarDecipher", () => {

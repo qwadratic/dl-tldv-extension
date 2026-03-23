@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { parseTldvConf, parsePlaylist } from "../src/pipeline/playlist";
 
 describe("parseTldvConf", () => {
