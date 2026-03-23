@@ -149,7 +149,20 @@ browser.runtime.onMessage.addListener((rawMessage: unknown) => {
   if (!btn) return;
 
   if (message.type === "DOWNLOAD_PROGRESS") {
-    btn.querySelector("span")!.textContent = `${message.current}/${message.total}`;
+    if (message.total > 0) {
+      const pct = Math.round((message.current / message.total) * 100);
+      btn.querySelector("span")!.textContent =
+        `${message.current}/${message.total} (${pct}%)`;
+    }
+  } else if (message.type === "DOWNLOAD_COMPLETE") {
+    btn.disabled = false;
+    btn.querySelector("span")!.textContent = "Done!";
+    btn.title = `Downloaded ${message.segmentCount} segments for "${message.meetingName}"`;
+    // Reset button text after 5 seconds
+    setTimeout(() => {
+      btn.querySelector("span")!.textContent = "Download";
+      btn.title = "Download meeting recording as MP4";
+    }, 5000);
   } else if (message.type === "DOWNLOAD_ERROR") {
     btn.disabled = false;
     btn.querySelector("span")!.textContent = "Error";

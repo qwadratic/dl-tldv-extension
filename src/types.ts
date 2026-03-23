@@ -10,9 +10,20 @@ export interface ProgressMessage {
   total: number;
 }
 
+export interface CompleteMessage {
+  type: "DOWNLOAD_COMPLETE";
+  meetingName: string;
+  meetingDate: string;
+  segmentCount: number;
+}
+
 export interface ErrorMessage {
   type: "DOWNLOAD_ERROR";
   error: string;
 }
 
-export type ExtensionMessage = DownloadMessage | ProgressMessage | ErrorMessage;
+export type ExtensionMessage =
+  | DownloadMessage
+  | ProgressMessage
+  | CompleteMessage
+  | ErrorMessage;
