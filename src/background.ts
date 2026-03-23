@@ -2,7 +2,6 @@ import browser from "webextension-polyfill";
 import { fetchMeetingMetadata, fetchPlaylist } from "./pipeline/api";
 import { parsePlaylist } from "./pipeline/playlist";
 import { downloadSegments } from "./pipeline/downloader";
-import { remuxSegments } from "./pipeline/remux";
 import type {
   ExtensionMessage,
   ProgressMessage,
@@ -10,7 +9,24 @@ import type {
   RemuxProgressMessage,
   RemuxCompleteMessage,
 } from "./types";
-import type { MeetingMetadata } from "./pipeline/types";
+
+let hasOffscreen = false;
+
+async function ensureOffscreen(): Promise<void> {
+  if (hasOffscreen) return;
+  try {
+    // @ts-expect-error chrome.offscreen types may not be present
+    await chrome.offscreen.createDocument({
+      url: "offscreen.html",
+      reasons: ["WORKERS"],
+      justification: "ffmpeg.wasm requires Web Workers for remuxing video",
+    });
+    hasOffscreen = true;
+  } catch {
+    // Already exists
+    hasOffscreen = true;
+  }
+}
 
 browser.runtime.onInstalled.addListener(async () => {
   console.log("[dl-tldv] Extension installed");
@@ -105,22 +121,31 @@ async function handleDownload(
       `[dl-tldv] Download complete: ${result.segments.length} segments, ${(result.totalBytes / 1024 / 1024).toFixed(1)} MB`,
     );
 
-    // Step 5: Remux segments into MP4
-    console.log("[dl-tldv] Starting remux...");
-    const { mp4Data, filename } = await remuxSegments(
-      result.segments,
-      metadata,
-      sendRemuxProgress,
-    );
+    // Step 5: Remux segments into MP4 via offscreen document
+    console.log("[dl-tldv] Starting remux via offscreen document...");
+    await ensureOffscreen();
+
+    const remuxResult = await chrome.runtime.sendMessage({
+      type: "REMUX_REQUEST",
+      segments: result.segments,
+      metadata: { name: metadata.name, createdAt: metadata.createdAt },
+    }) as { success: boolean; mp4Data?: number[]; filename?: string; error?: string };
+
+    if (!remuxResult.success || !remuxResult.mp4Data || !remuxResult.filename) {
+      throw new Error(remuxResult.error || "Remux failed");
+    }
+
+    const mp4Bytes = new Uint8Array(remuxResult.mp4Data);
+    const filename = remuxResult.filename;
     console.log(
-      `[dl-tldv] Remux complete: ${filename} (${(mp4Data.byteLength / 1024 / 1024).toFixed(1)} MB)`,
+      `[dl-tldv] Remux complete: ${filename} (${(mp4Bytes.byteLength / 1024 / 1024).toFixed(1)} MB)`,
     );
 
     // Free segment memory now that remux is done
     result.segments.length = 0;
 
     // Step 6: Trigger browser download
-    const blob = new Blob([mp4Data.buffer as ArrayBuffer], { type: "video/mp4" });
+    const blob = new Blob([mp4Bytes.buffer as ArrayBuffer], { type: "video/mp4" });
     const blobUrl = URL.createObjectURL(blob);
 
     await browser.downloads.download({
@@ -144,18 +169,33 @@ async function handleDownload(
   }
 }
 
+// Track which tab initiated the download for forwarding remux stages
+let activeDownloadTabId: number | null = null;
+
 browser.runtime.onMessage.addListener(
   (rawMessage: unknown, sender: browser.Runtime.MessageSender) => {
-    const message = rawMessage as ExtensionMessage;
+    const message = rawMessage as ExtensionMessage & { type: string; stage?: string };
+
     if (message.type === "START_DOWNLOAD") {
       const tabId = sender.tab?.id;
       if (!tabId) {
         console.error("[dl-tldv] No tab ID in sender");
         return;
       }
+      activeDownloadTabId = tabId;
       // Fire and forget — progress sent via tabs.sendMessage
       handleDownload(message.meetingId, tabId);
     }
+
+    // Forward remux stage from offscreen document to the active tab
+    if (message.type === "REMUX_STAGE" && message.stage && activeDownloadTabId) {
+      const msg: RemuxProgressMessage = {
+        type: "REMUX_PROGRESS",
+        stage: message.stage,
+      };
+      browser.tabs.sendMessage(activeDownloadTabId, msg);
+    }
+
     return undefined;
   },
 );

@@ -31,10 +31,11 @@ export default defineConfig({
   },
   plugins: [
     {
-      name: "build-content-script",
+      name: "build-extra-scripts",
       async writeBundle() {
-        // Second build: content script as IIFE
         const { build } = await import("vite");
+
+        // Build content script as IIFE
         await build({
           configFile: false,
           build: {
@@ -49,9 +50,27 @@ export default defineConfig({
               fileName: () => "content.js",
             },
             rollupOptions: {
-              output: {
-                inlineDynamicImports: true,
-              },
+              output: { inlineDynamicImports: true },
+            },
+          },
+        });
+
+        // Build offscreen script as IIFE (needs Web Worker support for ffmpeg.wasm)
+        await build({
+          configFile: false,
+          build: {
+            outDir: resolve(__dirname, "dist"),
+            emptyOutDir: false,
+            sourcemap: true,
+            target: "es2020",
+            lib: {
+              entry: resolve(__dirname, "src/offscreen.ts"),
+              formats: ["iife"],
+              name: "DlTldvOffscreen",
+              fileName: () => "offscreen.js",
+            },
+            rollupOptions: {
+              output: { inlineDynamicImports: true },
             },
           },
         });
@@ -70,6 +89,10 @@ export default defineConfig({
         copyFileSync(
           resolve(__dirname, "src/styles.css"),
           resolve(dist, "styles.css"),
+        );
+        copyFileSync(
+          resolve(__dirname, "src/offscreen.html"),
+          resolve(dist, "offscreen.html"),
         );
         copyFileSync(
           resolve(__dirname, "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm"),
