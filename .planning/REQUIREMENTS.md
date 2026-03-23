@@ -35,9 +35,9 @@
 
 ### Cross-Browser
 
-- [ ] **XBRO-01**: Extension works in Chrome using Manifest V3
-- [ ] **XBRO-02**: Extension works in Firefox using Manifest V3
-- [ ] **XBRO-03**: Single codebase with WebExtension polyfill for cross-browser compatibility
+- [x] **XBRO-01**: Extension works in Chrome using Manifest V3
+- [x] **XBRO-02**: Extension works in Firefox using Manifest V3
+- [x] **XBRO-03**: Single codebase with WebExtension polyfill for cross-browser compatibility
 
 ## v2 Requirements
 
@@ -82,9 +82,9 @@
 | MUX-03 | Phase 3 | Pending |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |
-| XBRO-01 | Phase 1 | Pending |
-| XBRO-02 | Phase 1 | Pending |
-| XBRO-03 | Phase 1 | Pending |
+| XBRO-01 | Phase 1 | Complete |
+| XBRO-02 | Phase 1 | Complete |
+| XBRO-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 19 total
