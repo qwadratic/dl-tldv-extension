@@ -1,9 +1,16 @@
 import { defineConfig } from "vite";
 import { resolve, dirname } from "node:path";
-import { copyFileSync, mkdirSync } from "node:fs";
+import { copyFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Browser extension constraints:
+// - Content scripts cannot use ES modules (no import/export)
+// - Chrome MV3 service workers support ES modules (with "type": "module")
+//   but Firefox MV3 does NOT support module service workers
+// Solution: Build as IIFE with all deps inlined. Since rollup only allows
+// IIFE with a single input, we do two sequential builds via a plugin.
 
 export default defineConfig({
   build: {
@@ -14,19 +21,45 @@ export default defineConfig({
     rollupOptions: {
       input: {
         background: resolve(__dirname, "src/background.ts"),
-        content: resolve(__dirname, "src/content.ts"),
       },
       output: {
+        format: "iife",
         entryFileNames: "[name].js",
-        chunkFileNames: "[name].js",
-        assetFileNames: "[name].[ext]",
+        inlineDynamicImports: true,
       },
     },
   },
   plugins: [
     {
+      name: "build-content-script",
+      async writeBundle() {
+        // Second build: content script as IIFE
+        const { build } = await import("vite");
+        await build({
+          configFile: false,
+          build: {
+            outDir: resolve(__dirname, "dist"),
+            emptyOutDir: false,
+            sourcemap: true,
+            target: "es2020",
+            lib: {
+              entry: resolve(__dirname, "src/content.ts"),
+              formats: ["iife"],
+              name: "DlTldvContent",
+              fileName: () => "content.js",
+            },
+            rollupOptions: {
+              output: {
+                inlineDynamicImports: true,
+              },
+            },
+          },
+        });
+      },
+    },
+    {
       name: "copy-extension-assets",
-      writeBundle() {
+      closeBundle() {
         const dist = resolve(__dirname, "dist");
         mkdirSync(dist, { recursive: true });
 
@@ -34,26 +67,28 @@ export default defineConfig({
           resolve(__dirname, "src/manifest.json"),
           resolve(dist, "manifest.json"),
         );
-
         copyFileSync(
           resolve(__dirname, "src/styles.css"),
           resolve(dist, "styles.css"),
         );
-
         copyFileSync(
-          resolve(
-            __dirname,
-            "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm",
-          ),
+          resolve(__dirname, "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm"),
           resolve(dist, "ffmpeg-core.wasm"),
         );
         copyFileSync(
-          resolve(
-            __dirname,
-            "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js",
-          ),
+          resolve(__dirname, "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js"),
           resolve(dist, "ffmpeg-core.js"),
         );
+
+        // Copy ffmpeg worker with stable name (hashed name breaks in IIFE)
+        const assetsDir = resolve(dist, "assets");
+        if (existsSync(assetsDir)) {
+          const files = readdirSync(assetsDir);
+          const workerFile = files.find((f: string) => f.startsWith("worker-") && f.endsWith(".js"));
+          if (workerFile) {
+            copyFileSync(resolve(assetsDir, workerFile), resolve(dist, "ffmpeg-worker.js"));
+          }
+        }
       },
     },
   ],

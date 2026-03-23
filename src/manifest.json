@@ -23,7 +23,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["ffmpeg-core.wasm", "ffmpeg-core.js"],
+      "resources": ["ffmpeg-core.wasm", "ffmpeg-core.js", "ffmpeg-worker.js"],
       "matches": ["<all_urls>"]
     }
   ],

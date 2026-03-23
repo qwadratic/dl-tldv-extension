@@ -41,9 +41,11 @@ export async function remuxSegments(
     // Load from extension's bundled files
     const coreURL = chrome.runtime.getURL("ffmpeg-core.js");
     const wasmURL = chrome.runtime.getURL("ffmpeg-core.wasm");
+    const classWorkerURL = chrome.runtime.getURL("ffmpeg-worker.js");
     await ffmpeg.load({
       coreURL,
       wasmURL,
+      classWorkerURL,
     });
 
     // Step 2: Write segments to virtual filesystem progressively
