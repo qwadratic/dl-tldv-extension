@@ -7,7 +7,8 @@
   "host_permissions": [
     "https://*.tldv.io/*",
     "https://gw.tldv.io/*",
-    "https://gaia.tldv.io/*"
+    "https://gaia.tldv.io/*",
+    "https://media-files.tldv.io/*"
   ],
   "background": {
     "service_worker": "background.js"
