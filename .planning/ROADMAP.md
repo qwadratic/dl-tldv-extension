@@ -41,7 +41,10 @@ Plans:
   2. Clicking the download button on a private meeting uses the existing Firebase auth session to authenticate and downloads segments successfully
   3. The Caesar cipher in the `#TLDVCONF` header is correctly decoded so segment URLs resolve to real S3 signed URLs
   4. The button displays live progress as segments download (e.g., "12 of 87 segments")
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — Core pipeline modules: Caesar cipher decoder, playlist parser, API client, Firebase auth extractor with unit tests
+- [ ] 02-02-PLAN.md — Service worker orchestration: segment downloader, pipeline wiring, progress reporting, human verification
 
 ### Phase 3: Remux and Deliver
 **Goal**: Downloaded segments are remuxed into a valid MP4 file via ffmpeg.wasm (stream copy) and saved to disk with the correct filename, with error states surfaced on the button
@@ -62,5 +65,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Extension Scaffold | 0/2 | Planning complete | - |
-| 2. Download Pipeline | 0/TBD | Not started | - |
+| 2. Download Pipeline | 0/2 | Planning complete | - |
 | 3. Remux and Deliver | 0/TBD | Not started | - |
