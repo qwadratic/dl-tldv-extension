@@ -15,10 +15,10 @@
 
 ### Video Pipeline
 
-- [ ] **VID-01**: Extract meeting ID from tldv.io meeting page URL
-- [ ] **VID-02**: Fetch meeting metadata via tldv watch-page API (`gw.tldv.io/v1/meetings/{id}/watch-page`)
-- [ ] **VID-03**: Fetch obfuscated m3u8 playlist from `gaia.tldv.io/v1/meetings/{id}/playlist.m3u8`
-- [ ] **VID-04**: Decode Caesar cipher on playlist segments using offset from `#TLDVCONF` header
+- [x] **VID-01**: Extract meeting ID from tldv.io meeting page URL
+- [x] **VID-02**: Fetch meeting metadata via tldv watch-page API (`gw.tldv.io/v1/meetings/{id}/watch-page`)
+- [x] **VID-03**: Fetch obfuscated m3u8 playlist from `gaia.tldv.io/v1/meetings/{id}/playlist.m3u8`
+- [x] **VID-04**: Decode Caesar cipher on playlist segments using offset from `#TLDVCONF` header
 - [ ] **VID-05**: Download all .ts segments from decoded signed S3 URLs
 - [ ] **VID-06**: Show segment download progress (X of Y segments fetched)
 
@@ -30,8 +30,8 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: Public meetings download without any authentication
-- [ ] **AUTH-02**: Private meetings download using Firebase auth token from logged-in tldv session in browser
+- [x] **AUTH-01**: Public meetings download without any authentication
+- [x] **AUTH-02**: Private meetings download using Firebase auth token from logged-in tldv session in browser
 
 ### Cross-Browser
 
@@ -71,17 +71,17 @@
 | UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 3 | Pending |
 | UI-05 | Phase 3 | Pending |
-| VID-01 | Phase 2 | Pending |
-| VID-02 | Phase 2 | Pending |
-| VID-03 | Phase 2 | Pending |
-| VID-04 | Phase 2 | Pending |
+| VID-01 | Phase 2 | Complete |
+| VID-02 | Phase 2 | Complete |
+| VID-03 | Phase 2 | Complete |
+| VID-04 | Phase 2 | Complete |
 | VID-05 | Phase 2 | Pending |
 | VID-06 | Phase 2 | Pending |
 | MUX-01 | Phase 3 | Pending |
 | MUX-02 | Phase 3 | Pending |
 | MUX-03 | Phase 3 | Pending |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
 | XBRO-01 | Phase 1 | Complete |
 | XBRO-02 | Phase 1 | Complete |
 | XBRO-03 | Phase 1 | Complete |
