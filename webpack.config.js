@@ -25,7 +25,10 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/manifest.json", to: "manifest.json" }],
+      patterns: [
+        { from: "src/manifest.json", to: "manifest.json" },
+        { from: "src/styles.css", to: "styles.css" },
+      ],
     }),
   ],
   mode: "production",
