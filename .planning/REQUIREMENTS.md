@@ -8,7 +8,7 @@
 ### Extension UI
 
 - [x] **UI-01**: Download button injected on tldv.io meeting pages next to "Copy link" button
-- [ ] **UI-02**: Button displays real-time download progress as percentage
+- [x] **UI-02**: Button displays real-time download progress as percentage
 - [x] **UI-03**: Button is disabled or hidden on non-meeting pages
 - [ ] **UI-04**: Button shows error state with message if download fails
 - [ ] **UI-05**: Downloaded file uses naming format `{YYYY-MM-DD}_{meeting-name}.mp4`
@@ -19,8 +19,8 @@
 - [x] **VID-02**: Fetch meeting metadata via tldv watch-page API (`gw.tldv.io/v1/meetings/{id}/watch-page`)
 - [x] **VID-03**: Fetch obfuscated m3u8 playlist from `gaia.tldv.io/v1/meetings/{id}/playlist.m3u8`
 - [x] **VID-04**: Decode Caesar cipher on playlist segments using offset from `#TLDVCONF` header
-- [ ] **VID-05**: Download all .ts segments from decoded signed S3 URLs
-- [ ] **VID-06**: Show segment download progress (X of Y segments fetched)
+- [x] **VID-05**: Download all .ts segments from decoded signed S3 URLs
+- [x] **VID-06**: Show segment download progress (X of Y segments fetched)
 
 ### Remuxing
 
@@ -67,7 +67,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | UI-01 | Phase 1 | Complete |
-| UI-02 | Phase 2 | Pending |
+| UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 3 | Pending |
 | UI-05 | Phase 3 | Pending |
@@ -75,8 +75,8 @@
 | VID-02 | Phase 2 | Complete |
 | VID-03 | Phase 2 | Complete |
 | VID-04 | Phase 2 | Complete |
-| VID-05 | Phase 2 | Pending |
-| VID-06 | Phase 2 | Pending |
+| VID-05 | Phase 2 | Complete |
+| VID-06 | Phase 2 | Complete |
 | MUX-01 | Phase 3 | Pending |
 | MUX-02 | Phase 3 | Pending |
 | MUX-03 | Phase 3 | Pending |

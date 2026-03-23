@@ -13,7 +13,7 @@ Build a cross-browser extension that injects a download button on tldv.io meetin
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Extension Scaffold** - Loadable cross-browser extension with injected download button visible on tldv meeting pages (completed 2026-03-23)
-- [ ] **Phase 2: Download Pipeline** - Full HLS pipeline: extract meeting ID, fetch metadata and playlist, decode Caesar cipher, authenticate, download all segments with progress
+- [x] **Phase 2: Download Pipeline** - Full HLS pipeline: extract meeting ID, fetch metadata and playlist, decode Caesar cipher, authenticate, download all segments with progress (completed 2026-03-23)
 - [ ] **Phase 3: Remux and Deliver** - Remux segments into MP4 via ffmpeg.wasm and trigger browser file download with error handling
 
 ## Phase Details
@@ -41,7 +41,7 @@ Plans:
   2. Clicking the download button on a private meeting uses the existing Firebase auth session to authenticate and downloads segments successfully
   3. The Caesar cipher in the `#TLDVCONF` header is correctly decoded so segment URLs resolve to real S3 signed URLs
   4. The button displays live progress as segments download (e.g., "12 of 87 segments")
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 02-01-PLAN.md — Core pipeline modules: Caesar cipher decoder, playlist parser, API client, Firebase auth extractor with unit tests
 - [ ] 02-02-PLAN.md — Service worker orchestration: segment downloader, pipeline wiring, progress reporting, human verification
@@ -68,5 +68,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Extension Scaffold | 2/2 | Complete    | 2026-03-23 |
-| 2. Download Pipeline | 0/2 | Planning complete | - |
+| 2. Download Pipeline | 2/2 | Complete   | 2026-03-23 |
 | 3. Remux and Deliver | 0/2 | Planning complete | - |

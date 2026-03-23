@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-23T18:04:33.572Z"
-last_activity: 2026-03-23 — Completed 02-01-PLAN.md
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-23T18:12:00.000Z"
+last_activity: 2026-03-23 — Completed 02-02-PLAN.md
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-23)
 
 **Core value:** One-click video download from any tldv.io meeting page — public or private — with no external tools required.
-**Current focus:** Phase 2 — Download Pipeline
+**Current focus:** Phase 3 — Remux and Delivery
 
 ## Current Position
 
-Phase: 2 of 3 (Download Pipeline)
-Plan: 2 of 2 in current phase
+Phase: 3 of 3 (Remux and Delivery)
+Plan: 1 of 2 in current phase
 Status: Executing
-Last activity: 2026-03-23 — Completed 02-01-PLAN.md
+Last activity: 2026-03-23 — Completed 02-02-PLAN.md
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [█████░░░░░] 50%
 | Phase 01-extension-scaffold P01 | 2min | 2 tasks | 8 files |
 | Phase 01 P02 | 5min | 2 tasks | 4 files |
 | Phase 02 P01 | 3min | 2 tasks | 11 files |
+| Phase 02 P02 | 4min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - [Phase 01-extension-scaffold]: Dual MutationObserver strategy for SPA navigation handling
 - [Phase 02]: Used ts-jest with separate tsconfig.test.json to keep test types out of production build
 - [Phase 02]: Caesar cipher shifts letters forward by +offset to decode (matching tldv proven mechanism)
+- [Phase 02]: Concurrency limit of 6 matching browser per-host connection limit
+- [Phase 02]: Segments stored in memory as ArrayBuffer[] for Phase 3 remuxing (not persisted to disk)
+- [Phase 02]: Fire-and-forget pattern for handleDownload to avoid blocking onMessage listener
 
 ### Pending Todos
 
@@ -82,7 +86,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T18:04:33.569Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-23T18:12:00.000Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
 
