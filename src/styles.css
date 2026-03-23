@@ -2,29 +2,31 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+  border: none;
   border-radius: 8px;
-  background: transparent;
+  background: #4F46E5;
   color: #fff;
   font-size: 14px;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
   transition: background 0.15s ease;
-  margin-left: 8px;
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .dl-tldv-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #4338CA;
 }
 
 .dl-tldv-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .dl-tldv-btn svg {
   width: 16px;
   height: 16px;
-  fill: currentColor;
+  flex-shrink: 0;
 }
