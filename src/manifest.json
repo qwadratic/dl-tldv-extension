@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "tldv Meeting Downloader",
+  "version": "0.1.0",
+  "description": "Download tldv.io meeting recordings as MP4 files",
+  "permissions": ["activeTab"],
+  "host_permissions": [
+    "https://*.tldv.io/*",
+    "https://gw.tldv.io/*",
+    "https://gaia.tldv.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.tldv.io/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {},
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "dl-tldv@extension.local",
+      "strict_min_version": "109.0"
+    }
+  }
+}
