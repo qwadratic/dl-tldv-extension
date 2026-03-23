@@ -19,6 +19,10 @@ export async function getFirebaseToken(): Promise<string | null> {
     request.onsuccess = () => {
       try {
         const db = request.result;
+        if (!db.objectStoreNames.contains("firebaseLocalStorage")) {
+          resolve(null);
+          return;
+        }
         const tx = db.transaction("firebaseLocalStorage", "readonly");
         const store = tx.objectStore("firebaseLocalStorage");
         const getAllRequest = store.getAll();
