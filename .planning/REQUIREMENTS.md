@@ -66,31 +66,31 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UI-01 | — | Pending |
-| UI-02 | — | Pending |
-| UI-03 | — | Pending |
-| UI-04 | — | Pending |
-| UI-05 | — | Pending |
-| VID-01 | — | Pending |
-| VID-02 | — | Pending |
-| VID-03 | — | Pending |
-| VID-04 | — | Pending |
-| VID-05 | — | Pending |
-| VID-06 | — | Pending |
-| MUX-01 | — | Pending |
-| MUX-02 | — | Pending |
-| MUX-03 | — | Pending |
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| XBRO-01 | — | Pending |
-| XBRO-02 | — | Pending |
-| XBRO-03 | — | Pending |
+| UI-01 | Phase 1 | Pending |
+| UI-02 | Phase 2 | Pending |
+| UI-03 | Phase 1 | Pending |
+| UI-04 | Phase 3 | Pending |
+| UI-05 | Phase 3 | Pending |
+| VID-01 | Phase 2 | Pending |
+| VID-02 | Phase 2 | Pending |
+| VID-03 | Phase 2 | Pending |
+| VID-04 | Phase 2 | Pending |
+| VID-05 | Phase 2 | Pending |
+| VID-06 | Phase 2 | Pending |
+| MUX-01 | Phase 3 | Pending |
+| MUX-02 | Phase 3 | Pending |
+| MUX-03 | Phase 3 | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| XBRO-01 | Phase 1 | Pending |
+| XBRO-02 | Phase 1 | Pending |
+| XBRO-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19
+- Mapped to phases: 19
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after initial definition*
+*Last updated: 2026-03-23 after roadmap creation*
