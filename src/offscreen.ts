@@ -38,7 +38,9 @@ chrome.runtime.onMessage.addListener(
           const concatLines: string[] = [];
           for (let i = 0; i < segments.length; i++) {
             const segName = `seg_${String(i).padStart(5, "0")}.ts`;
-            await ffmpeg.writeFile(segName, new Uint8Array(segments[i]));
+            // Segments arrive as number[] arrays (serialized from ArrayBuffer)
+            const bytes = new Uint8Array(segments[i] as unknown as number[]);
+            await ffmpeg.writeFile(segName, bytes);
             concatLines.push(`file '${segName}'`);
           }
 
@@ -56,13 +58,20 @@ chrome.runtime.onMessage.addListener(
 
           const filename = buildFilename(metadata.name, metadata.createdAt);
 
-          // Cleanup
+          // Cleanup ffmpeg FS
           for (let i = 0; i < segments.length; i++) {
             try { await ffmpeg.deleteFile(`seg_${String(i).padStart(5, "0")}.ts`); } catch {}
           }
           try { await ffmpeg.deleteFile("list.txt"); await ffmpeg.deleteFile("output.mp4"); } catch {}
 
-          sendResponse({ success: true, mp4Data: Array.from(mp4Data), filename });
+          // Convert MP4 to base64 data URL (service worker will trigger download)
+          // Can't use URL.createObjectURL cross-context, and offscreen has no downloads API
+          const base64 = btoa(
+            mp4Data.reduce((s: string, b: number) => s + String.fromCharCode(b), "")
+          );
+          const dataUrl = `data:video/mp4;base64,${base64}`;
+
+          sendResponse({ success: true, filename, dataUrl });
         } finally {
           ffmpeg.terminate();
         }

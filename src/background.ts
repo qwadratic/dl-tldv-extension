@@ -125,41 +125,38 @@ async function handleDownload(
     console.log("[dl-tldv] Starting remux via offscreen document...");
     await ensureOffscreen();
 
+    // Convert ArrayBuffers to number arrays for message serialization
+    // (chrome.runtime.sendMessage doesn't support structured clone in MV3)
+    const serializedSegments = result.segments.map(
+      (buf: ArrayBuffer) => Array.from(new Uint8Array(buf))
+    );
+
     const remuxResult = await chrome.runtime.sendMessage({
       type: "REMUX_REQUEST",
-      segments: result.segments,
+      segments: serializedSegments,
       metadata: { name: metadata.name, createdAt: metadata.createdAt },
-    }) as { success: boolean; mp4Data?: number[]; filename?: string; error?: string };
+    }) as { success: boolean; dataUrl?: string; filename?: string; error?: string };
 
-    if (!remuxResult.success || !remuxResult.mp4Data || !remuxResult.filename) {
+    if (!remuxResult.success || !remuxResult.filename || !remuxResult.dataUrl) {
       throw new Error(remuxResult.error || "Remux failed");
     }
 
-    const mp4Bytes = new Uint8Array(remuxResult.mp4Data);
     const filename = remuxResult.filename;
-    console.log(
-      `[dl-tldv] Remux complete: ${filename} (${(mp4Bytes.byteLength / 1024 / 1024).toFixed(1)} MB)`,
-    );
+    console.log(`[dl-tldv] Remux complete: ${filename}`);
 
     // Free segment memory now that remux is done
     result.segments.length = 0;
 
-    // Step 6: Trigger browser download
-    const blob = new Blob([mp4Bytes.buffer as ArrayBuffer], { type: "video/mp4" });
-    const blobUrl = URL.createObjectURL(blob);
-
+    // Step 6: Trigger browser download via data URL
     await browser.downloads.download({
-      url: blobUrl,
-      filename: filename,
+      url: remuxResult.dataUrl,
+      filename,
       saveAs: false,
     });
 
     console.log(`[dl-tldv] Download triggered: ${filename}`);
 
-    // Clean up blob URL after a delay (browser needs time to start the download)
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-
-    // Step 7: Signal completion to content script
+    // Signal completion to content script
     sendRemuxComplete(filename);
   } catch (err) {
     const errorMsg =
