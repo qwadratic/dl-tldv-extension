@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Extension Scaffold** - Loadable cross-browser extension with injected download button visible on tldv meeting pages (completed 2026-03-23)
 - [x] **Phase 2: Download Pipeline** - Full HLS pipeline: extract meeting ID, fetch metadata and playlist, decode Caesar cipher, authenticate, download all segments with progress (completed 2026-03-23)
-- [ ] **Phase 3: Remux and Deliver** - Remux segments into MP4 via ffmpeg.wasm and trigger browser file download with error handling
+- [x] **Phase 3: Remux and Deliver** - Remux segments into MP4 via ffmpeg.wasm and trigger browser file download with error handling (completed 2026-03-23)
 
 ## Phase Details
 
@@ -55,7 +55,7 @@ Plans:
   2. The saved file is named `{YYYY-MM-DD}_{meeting-name}.mp4` matching the meeting date and title
   3. The remuxed video plays correctly in a standard media player with no re-encoding artifacts
   4. If the download or remux fails, the button shows a readable error message instead of silently stalling
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
 - [ ] 03-01-PLAN.md — Remux module: ffmpeg.wasm integration, filename utility, WASM bundling, message types
 - [ ] 03-02-PLAN.md — Pipeline wiring: remux into background flow, browser download trigger, error display, human verification
@@ -69,4 +69,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Extension Scaffold | 2/2 | Complete    | 2026-03-23 |
 | 2. Download Pipeline | 2/2 | Complete    | 2026-03-23 |
-| 3. Remux and Deliver | 0/2 | Planning complete | - |
+| 3. Remux and Deliver | 0/2 | Complete    | 2026-03-23 |
