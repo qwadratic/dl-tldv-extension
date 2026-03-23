@@ -1,50 +1,93 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { buildFilename } from "./pipeline/filename";
 
-// Offscreen document: runs ffmpeg.wasm remux in a context that supports Web Workers.
-// The service worker sends REMUX_REQUEST messages here, we process and reply.
+// Offscreen document: downloads segments, remuxes via ffmpeg.wasm, returns blob URL.
+// Runs in a full DOM context with Web Worker + URL.createObjectURL support.
+
+const CONCURRENCY = 6;
+
+async function downloadSegments(
+  urls: string[],
+  onProgress: (current: number, total: number) => void,
+): Promise<ArrayBuffer[]> {
+  const total = urls.length;
+  const results: (ArrayBuffer | null)[] = new Array(total).fill(null);
+  let completed = 0;
+  const queue = urls.map((url, i) => ({ url, i }));
+  const workers: Promise<void>[] = [];
+
+  for (let w = 0; w < Math.min(CONCURRENCY, queue.length); w++) {
+    workers.push(
+      (async () => {
+        while (queue.length > 0) {
+          const item = queue.shift();
+          if (!item) break;
+          const resp = await fetch(item.url);
+          if (!resp.ok) throw new Error(`Segment ${item.i}: HTTP ${resp.status}`);
+          results[item.i] = await resp.arrayBuffer();
+          completed++;
+          onProgress(completed, total);
+        }
+      })(),
+    );
+  }
+
+  await Promise.all(workers);
+  if (results.some((r) => r === null)) throw new Error("Missing segments");
+  return results as ArrayBuffer[];
+}
 
 chrome.runtime.onMessage.addListener(
   (message: unknown, _sender: chrome.runtime.MessageSender, sendResponse: (response: unknown) => void) => {
     const msg = message as {
       type: string;
-      segments?: ArrayBuffer[];
+      segmentUrls?: string[];
       metadata?: { name: string; createdAt: string };
     };
 
     if (msg.type !== "REMUX_REQUEST") return false;
 
-    // Must return true to indicate async response
     (async () => {
       try {
-        const { segments, metadata } = msg;
-        if (!segments || !metadata) throw new Error("Missing segments or metadata");
+        const { segmentUrls, metadata } = msg;
+        if (!segmentUrls || !metadata) throw new Error("Missing data");
 
-        // Notify progress via separate messages (fire-and-forget)
         const sendStage = (stage: string) => {
           chrome.runtime.sendMessage({ type: "REMUX_STAGE", stage }).catch(() => {});
         };
 
-        const ffmpeg = new FFmpeg();
+        // Step 1: Download segments
+        sendStage("downloading");
+        const onProgress = (current: number, total: number) => {
+          chrome.runtime.sendMessage({
+            type: "DOWNLOAD_PROGRESS_RELAY",
+            current,
+            total,
+          }).catch(() => {});
+        };
+        const segments = await downloadSegments(segmentUrls, onProgress);
+        console.log(`[dl-tldv:offscreen] Downloaded ${segments.length} segments`);
 
+        // Step 2: Remux
+        const ffmpeg = new FFmpeg();
         try {
           sendStage("loading");
-          const coreURL = chrome.runtime.getURL("ffmpeg-core.js");
-          const wasmURL = chrome.runtime.getURL("ffmpeg-core.wasm");
-          const classWorkerURL = chrome.runtime.getURL("ffmpeg-worker.js");
-          await ffmpeg.load({ coreURL, wasmURL, classWorkerURL });
+          await ffmpeg.load({
+            coreURL: chrome.runtime.getURL("ffmpeg-core.js"),
+            wasmURL: chrome.runtime.getURL("ffmpeg-core.wasm"),
+            classWorkerURL: chrome.runtime.getURL("ffmpeg-worker.js"),
+          });
 
           sendStage("writing");
-          const concatLines: string[] = [];
+          const lines: string[] = [];
           for (let i = 0; i < segments.length; i++) {
-            const segName = `seg_${String(i).padStart(5, "0")}.ts`;
-            // Segments arrive as number[] arrays (serialized from ArrayBuffer)
-            const bytes = new Uint8Array(segments[i] as unknown as number[]);
-            await ffmpeg.writeFile(segName, bytes);
-            concatLines.push(`file '${segName}'`);
+            const name = `seg_${String(i).padStart(5, "0")}.ts`;
+            await ffmpeg.writeFile(name, new Uint8Array(segments[i]));
+            lines.push(`file '${name}'`);
+            // Free source buffer
+            (segments as (ArrayBuffer | null)[])[i] = null;
           }
-
-          await ffmpeg.writeFile("list.txt", new TextEncoder().encode(concatLines.join("\n")));
+          await ffmpeg.writeFile("list.txt", new TextEncoder().encode(lines.join("\n")));
 
           sendStage("remuxing");
           await ffmpeg.exec([
@@ -58,28 +101,27 @@ chrome.runtime.onMessage.addListener(
 
           const filename = buildFilename(metadata.name, metadata.createdAt);
 
-          // Cleanup ffmpeg FS
-          for (let i = 0; i < segments.length; i++) {
+          // Cleanup FS
+          for (let i = 0; i < lines.length; i++) {
             try { await ffmpeg.deleteFile(`seg_${String(i).padStart(5, "0")}.ts`); } catch {}
           }
           try { await ffmpeg.deleteFile("list.txt"); await ffmpeg.deleteFile("output.mp4"); } catch {}
 
-          // Convert MP4 to base64 data URL (service worker will trigger download)
-          // Can't use URL.createObjectURL cross-context, and offscreen has no downloads API
-          const base64 = btoa(
-            mp4Data.reduce((s: string, b: number) => s + String.fromCharCode(b), "")
-          );
-          const dataUrl = `data:video/mp4;base64,${base64}`;
+          // Create blob URL (offscreen has DOM access)
+          const blob = new Blob([mp4Data.buffer], { type: "video/mp4" });
+          const blobUrl = URL.createObjectURL(blob);
 
-          sendResponse({ success: true, filename, dataUrl });
+          console.log(`[dl-tldv:offscreen] Remux done: ${filename} (${(mp4Data.byteLength / 1024 / 1024).toFixed(1)} MB)`);
+          sendResponse({ success: true, filename, blobUrl });
         } finally {
           ffmpeg.terminate();
         }
       } catch (err) {
+        console.error("[dl-tldv:offscreen] Error:", err);
         sendResponse({ success: false, error: err instanceof Error ? err.message : String(err) });
       }
     })();
 
-    return true; // async response
+    return true;
   }
 );

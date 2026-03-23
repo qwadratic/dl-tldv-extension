@@ -1,7 +1,6 @@
 import browser from "webextension-polyfill";
 import { fetchMeetingMetadata, fetchPlaylist } from "./pipeline/api";
 import { parsePlaylist } from "./pipeline/playlist";
-import { downloadSegments } from "./pipeline/downloader";
 import type {
   ExtensionMessage,
   ProgressMessage,
@@ -111,45 +110,27 @@ async function handleDownload(
       `[dl-tldv] Found ${parsed.segmentUrls.length} segments (offset=${parsed.conf.offset})`,
     );
 
-    // Send initial progress (0 of N)
-    sendProgress(0, parsed.segmentUrls.length);
-
-    // Step 4: Download all segments
-    console.log("[dl-tldv] Downloading segments...");
-    const result = await downloadSegments(parsed.segmentUrls, sendProgress);
-    console.log(
-      `[dl-tldv] Download complete: ${result.segments.length} segments, ${(result.totalBytes / 1024 / 1024).toFixed(1)} MB`,
-    );
-
-    // Step 5: Remux segments into MP4 via offscreen document
-    console.log("[dl-tldv] Starting remux via offscreen document...");
+    // Step 4+5: Offscreen document handles download + remux
+    // (segments too large for message passing, offscreen fetches them directly)
+    console.log("[dl-tldv] Handing off to offscreen document...");
     await ensureOffscreen();
-
-    // Convert ArrayBuffers to number arrays for message serialization
-    // (chrome.runtime.sendMessage doesn't support structured clone in MV3)
-    const serializedSegments = result.segments.map(
-      (buf: ArrayBuffer) => Array.from(new Uint8Array(buf))
-    );
 
     const remuxResult = await chrome.runtime.sendMessage({
       type: "REMUX_REQUEST",
-      segments: serializedSegments,
+      segmentUrls: parsed.segmentUrls,
       metadata: { name: metadata.name, createdAt: metadata.createdAt },
-    }) as { success: boolean; dataUrl?: string; filename?: string; error?: string };
+    }) as { success: boolean; blobUrl?: string; filename?: string; error?: string };
 
-    if (!remuxResult.success || !remuxResult.filename || !remuxResult.dataUrl) {
+    if (!remuxResult.success || !remuxResult.filename || !remuxResult.blobUrl) {
       throw new Error(remuxResult.error || "Remux failed");
     }
 
-    const filename = remuxResult.filename;
+    const { filename, blobUrl } = remuxResult;
     console.log(`[dl-tldv] Remux complete: ${filename}`);
 
-    // Free segment memory now that remux is done
-    result.segments.length = 0;
-
-    // Step 6: Trigger browser download via data URL
+    // Step 6: Trigger browser download (blob URL from offscreen is same origin)
     await browser.downloads.download({
-      url: remuxResult.dataUrl,
+      url: blobUrl,
       filename,
       saveAs: false,
     });
@@ -189,6 +170,17 @@ browser.runtime.onMessage.addListener(
       const msg: RemuxProgressMessage = {
         type: "REMUX_PROGRESS",
         stage: message.stage,
+      };
+      browser.tabs.sendMessage(activeDownloadTabId, msg);
+    }
+
+    // Forward download progress from offscreen document to the active tab
+    if (message.type === "DOWNLOAD_PROGRESS_RELAY" && activeDownloadTabId) {
+      const relay = rawMessage as { current: number; total: number };
+      const msg: ProgressMessage = {
+        type: "DOWNLOAD_PROGRESS",
+        current: relay.current,
+        total: relay.total,
       };
       browser.tabs.sendMessage(activeDownloadTabId, msg);
     }
