@@ -12,7 +12,7 @@ Build a cross-browser extension that injects a download button on tldv.io meetin
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Extension Scaffold** - Loadable cross-browser extension with injected download button visible on tldv meeting pages
+- [x] **Phase 1: Extension Scaffold** - Loadable cross-browser extension with injected download button visible on tldv meeting pages (completed 2026-03-23)
 - [ ] **Phase 2: Download Pipeline** - Full HLS pipeline: extract meeting ID, fetch metadata and playlist, decode Caesar cipher, authenticate, download all segments with progress
 - [ ] **Phase 3: Remux and Deliver** - Remux segments into MP4 via ffmpeg.wasm and trigger browser file download with error handling
 
@@ -27,10 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Extension loads in Firefox (MV3) without errors using the same codebase
   3. A download button appears next to the "Copy link" button on any tldv.io meeting page
   4. The download button is absent (hidden or not injected) on tldv.io non-meeting pages
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 Plans:
-- [ ] 01-01-PLAN.md — Extension scaffold: project setup, TypeScript/Webpack build, MV3 manifest, stub entry points
-- [ ] 01-02-PLAN.md — Content script: meeting page detection, download button injection next to "Copy link", human verification
+- [x] 01-01-PLAN.md — Extension scaffold: project setup, TypeScript/Webpack build, MV3 manifest, stub entry points
+- [x] 01-02-PLAN.md — Content script: meeting page detection, download button injection next to "Copy link", human verification
 
 ### Phase 2: Download Pipeline
 **Goal**: Clicking the download button fetches meeting metadata, decodes the obfuscated playlist, authenticates when needed, downloads all .ts segments, and shows live segment progress
@@ -67,6 +67,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Extension Scaffold | 0/2 | Planning complete | - |
+| 1. Extension Scaffold | 2/2 | Complete   | 2026-03-23 |
 | 2. Download Pipeline | 0/2 | Planning complete | - |
 | 3. Remux and Deliver | 0/2 | Planning complete | - |

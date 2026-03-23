@@ -7,9 +7,9 @@
 
 ### Extension UI
 
-- [ ] **UI-01**: Download button injected on tldv.io meeting pages next to "Copy link" button
+- [x] **UI-01**: Download button injected on tldv.io meeting pages next to "Copy link" button
 - [ ] **UI-02**: Button displays real-time download progress as percentage
-- [ ] **UI-03**: Button is disabled or hidden on non-meeting pages
+- [x] **UI-03**: Button is disabled or hidden on non-meeting pages
 - [ ] **UI-04**: Button shows error state with message if download fails
 - [ ] **UI-05**: Downloaded file uses naming format `{YYYY-MM-DD}_{meeting-name}.mp4`
 
@@ -66,9 +66,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UI-01 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 2 | Pending |
-| UI-03 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 3 | Pending |
 | UI-05 | Phase 3 | Pending |
 | VID-01 | Phase 2 | Pending |
