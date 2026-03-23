@@ -12,8 +12,31 @@ import type {
 } from "./types";
 import type { MeetingMetadata } from "./pipeline/types";
 
-browser.runtime.onInstalled.addListener(() => {
+browser.runtime.onInstalled.addListener(async () => {
   console.log("[dl-tldv] Extension installed");
+
+  // Inject content script into already-open tldv tabs
+  try {
+    const tabs = await browser.tabs.query({ url: "https://*.tldv.io/*" });
+    for (const tab of tabs) {
+      if (!tab.id) continue;
+      try {
+        await browser.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ["content.js"],
+        });
+        await browser.scripting.insertCSS({
+          target: { tabId: tab.id },
+          files: ["styles.css"],
+        });
+        console.log(`[dl-tldv] Injected into existing tab ${tab.id}: ${tab.url}`);
+      } catch (err) {
+        console.warn(`[dl-tldv] Could not inject into tab ${tab.id}:`, err);
+      }
+    }
+  } catch (err) {
+    console.warn("[dl-tldv] Could not query tabs:", err);
+  }
 });
 
 async function handleDownload(
