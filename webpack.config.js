@@ -22,12 +22,25 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".js"],
+    fallback: {
+      path: false,
+      fs: false,
+      crypto: false,
+    },
   },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
         { from: "src/manifest.json", to: "manifest.json" },
         { from: "src/styles.css", to: "styles.css" },
+        {
+          from: "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm",
+          to: "ffmpeg-core.wasm",
+        },
+        {
+          from: "node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js",
+          to: "ffmpeg-core.js",
+        },
       ],
     }),
   ],

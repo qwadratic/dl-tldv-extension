@@ -22,8 +22,20 @@ export interface ErrorMessage {
   error: string;
 }
 
+export interface RemuxProgressMessage {
+  type: "REMUX_PROGRESS";
+  stage: string; // "loading" | "writing" | "remuxing" | "reading"
+}
+
+export interface RemuxCompleteMessage {
+  type: "REMUX_COMPLETE";
+  filename: string;
+}
+
 export type ExtensionMessage =
   | DownloadMessage
   | ProgressMessage
   | CompleteMessage
-  | ErrorMessage;
+  | ErrorMessage
+  | RemuxProgressMessage
+  | RemuxCompleteMessage;

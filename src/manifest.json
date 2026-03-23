@@ -3,7 +3,7 @@
   "name": "tldv Meeting Downloader",
   "version": "0.1.0",
   "description": "Download tldv.io meeting recordings as MP4 files",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "downloads"],
   "host_permissions": [
     "https://*.tldv.io/*",
     "https://gw.tldv.io/*",
@@ -19,6 +19,12 @@
       "js": ["content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["ffmpeg-core.wasm", "ffmpeg-core.js"],
+      "matches": ["<all_urls>"]
     }
   ],
   "icons": {},
