@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -16,8 +16,11 @@
     "webextension-polyfill": "^0.12.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/webextension-polyfill": "^0.12.5",
     "copy-webpack-plugin": "^14.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
     "ts-loader": "^9.5.4",
     "typescript": "^6.0.2",
     "webpack": "^5.105.4",
