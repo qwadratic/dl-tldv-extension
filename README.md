@@ -117,6 +117,16 @@ gh release create v1.0.0 --title "v1.0.0" --notes "Initial release"
 
 The CI workflow runs on every push/PR. The release workflow runs only on published GitHub releases, attaches zip artifacts, and publishes to stores (if credentials are configured).
 
+## Privacy
+
+This extension:
+
+- **Collects no user data** — no analytics, no tracking, no telemetry
+- **Makes no external requests** except to tldv.io domains (to fetch meeting data and video segments)
+- **Stores nothing** — no cookies, no local storage, no user profiles
+- **Runs entirely locally** — all video processing (download + remux) happens in your browser
+- **Source code is open** — inspect everything at [github.com/qwadratic/dl-tldv-extension](https://github.com/qwadratic/dl-tldv-extension)
+
 ## License
 
 MIT
