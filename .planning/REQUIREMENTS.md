@@ -11,7 +11,7 @@
 - [x] **UI-02**: Button displays real-time download progress as percentage
 - [x] **UI-03**: Button is disabled or hidden on non-meeting pages
 - [ ] **UI-04**: Button shows error state with message if download fails
-- [ ] **UI-05**: Downloaded file uses naming format `{YYYY-MM-DD}_{meeting-name}.mp4`
+- [x] **UI-05**: Downloaded file uses naming format `{YYYY-MM-DD}_{meeting-name}.mp4`
 
 ### Video Pipeline
 
@@ -24,8 +24,8 @@
 
 ### Remuxing
 
-- [ ] **MUX-01**: Remux downloaded .ts segments into MP4 container using ffmpeg.wasm
-- [ ] **MUX-02**: Use stream copy (no re-encoding) for fast, lossless remuxing
+- [x] **MUX-01**: Remux downloaded .ts segments into MP4 container using ffmpeg.wasm
+- [x] **MUX-02**: Use stream copy (no re-encoding) for fast, lossless remuxing
 - [ ] **MUX-03**: Trigger standard browser file download for completed MP4
 
 ### Authentication
@@ -70,15 +70,15 @@
 | UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 3 | Pending |
-| UI-05 | Phase 3 | Pending |
+| UI-05 | Phase 3 | Complete |
 | VID-01 | Phase 2 | Complete |
 | VID-02 | Phase 2 | Complete |
 | VID-03 | Phase 2 | Complete |
 | VID-04 | Phase 2 | Complete |
 | VID-05 | Phase 2 | Complete |
 | VID-06 | Phase 2 | Complete |
-| MUX-01 | Phase 3 | Pending |
-| MUX-02 | Phase 3 | Pending |
+| MUX-01 | Phase 3 | Complete |
+| MUX-02 | Phase 3 | Complete |
 | MUX-03 | Phase 3 | Pending |
 | AUTH-01 | Phase 2 | Complete |
 | AUTH-02 | Phase 2 | Complete |

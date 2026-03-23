@@ -10,8 +10,8 @@ progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Current Position
 
 Phase: 3 of 3 (Remux and Delivery)
-Plan: 1 of 2 in current phase
+Plan: 2 of 2 in current phase
 Status: Executing
-Last activity: 2026-03-23 — Completed 02-02-PLAN.md
+Last activity: 2026-03-23 — Completed 03-01-PLAN.md
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████░░░] 67%
 | Phase 01 P02 | 5min | 2 tasks | 4 files |
 | Phase 02 P01 | 3min | 2 tasks | 11 files |
 | Phase 02 P02 | 4min | 2 tasks | 4 files |
+| Phase 03 P01 | 3min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Concurrency limit of 6 matching browser per-host connection limit
 - [Phase 02]: Segments stored in memory as ArrayBuffer[] for Phase 3 remuxing (not persisted to disk)
 - [Phase 02]: Fire-and-forget pattern for handleDownload to avoid blocking onMessage listener
+- [Phase 03]: Single-threaded @ffmpeg/core (not -mt) avoids SharedArrayBuffer/COOP/COEP requirements
+- [Phase 03]: WASM files bundled via CopyWebpackPlugin, loaded via chrome.runtime.getURL at runtime
+- [Phase 03]: Added @types/chrome for chrome.runtime.getURL type support
 
 ### Pending Todos
 
@@ -86,7 +90,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T18:12:00.000Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-03-23T18:18:00Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
 
