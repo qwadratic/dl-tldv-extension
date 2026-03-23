@@ -67,6 +67,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Extension Scaffold | 2/2 | Complete   | 2026-03-23 |
+| 1. Extension Scaffold | 2/2 | Complete    | 2026-03-23 |
 | 2. Download Pipeline | 0/2 | Planning complete | - |
 | 3. Remux and Deliver | 0/2 | Planning complete | - |
