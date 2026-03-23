@@ -156,7 +156,7 @@ browser.runtime.onMessage.addListener((rawMessage: unknown) => {
     case "DOWNLOAD_PROGRESS":
       if (message.total > 0) {
         const pct = Math.round((message.current / message.total) * 100);
-        span.textContent = `${message.current}/${message.total} (${pct}%)`;
+        span.textContent = `${pct}%`;
       }
       break;
 
