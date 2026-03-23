@@ -90,6 +90,12 @@ export default defineConfig({
           resolve(__dirname, "src/styles.css"),
           resolve(dist, "styles.css"),
         );
+        for (const size of ["16", "48", "128"]) {
+          copyFileSync(
+            resolve(__dirname, `src/icon-${size}.png`),
+            resolve(dist, `icon-${size}.png`),
+          );
+        }
         copyFileSync(
           resolve(__dirname, "src/offscreen.html"),
           resolve(dist, "offscreen.html"),
