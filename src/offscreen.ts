@@ -108,7 +108,7 @@ chrome.runtime.onMessage.addListener(
           try { await ffmpeg.deleteFile("list.txt"); await ffmpeg.deleteFile("output.mp4"); } catch {}
 
           // Create blob URL (offscreen has DOM access)
-          const blob = new Blob([mp4Data.buffer], { type: "video/mp4" });
+          const blob = new Blob([mp4Data.buffer as ArrayBuffer], { type: "video/mp4" });
           const blobUrl = URL.createObjectURL(blob);
 
           console.log(`[dl-tldv:offscreen] Remux done: ${filename} (${(mp4Data.byteLength / 1024 / 1024).toFixed(1)} MB)`);

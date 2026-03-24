@@ -14,7 +14,6 @@ let hasOffscreen = false;
 async function ensureOffscreen(): Promise<void> {
   if (hasOffscreen) return;
   try {
-    // @ts-expect-error chrome.offscreen types may not be present
     await chrome.offscreen.createDocument({
       url: "offscreen.html",
       reasons: ["WORKERS"],
@@ -152,16 +151,21 @@ let activeDownloadTabId: number | null = null;
 
 browser.runtime.onMessage.addListener(
   (rawMessage: unknown, sender: browser.Runtime.MessageSender) => {
-    const message = rawMessage as ExtensionMessage & { type: string; stage?: string };
+    const message = rawMessage as {
+      type: string;
+      meetingId?: string;
+      stage?: string;
+      current?: number;
+      total?: number;
+    };
 
-    if (message.type === "START_DOWNLOAD") {
+    if (message.type === "START_DOWNLOAD" && message.meetingId) {
       const tabId = sender.tab?.id;
       if (!tabId) {
         console.error("[dl-tldv] No tab ID in sender");
         return;
       }
       activeDownloadTabId = tabId;
-      // Fire and forget — progress sent via tabs.sendMessage
       handleDownload(message.meetingId, tabId);
     }
 
@@ -175,12 +179,11 @@ browser.runtime.onMessage.addListener(
     }
 
     // Forward download progress from offscreen document to the active tab
-    if (message.type === "DOWNLOAD_PROGRESS_RELAY" && activeDownloadTabId) {
-      const relay = rawMessage as { current: number; total: number };
+    if (message.type === "DOWNLOAD_PROGRESS_RELAY" && message.current != null && message.total != null && activeDownloadTabId) {
       const msg: ProgressMessage = {
         type: "DOWNLOAD_PROGRESS",
-        current: relay.current,
-        total: relay.total,
+        current: message.current,
+        total: message.total,
       };
       browser.tabs.sendMessage(activeDownloadTabId, msg);
     }
