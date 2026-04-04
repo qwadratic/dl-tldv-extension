@@ -48,44 +48,14 @@ function createDownloadButton(): HTMLButtonElement {
   return btn;
 }
 
-function findHeaderActionsRow(): HTMLElement | null {
-  // Find the "Copy link" button, then walk up to the header actions row.
-  // tldv DOM: button > div > div.flex.items-stretch > div.flex.items-center.gap-2
-  //           > div.flex.items-center.justify-center > div.flex.flex-row.justify-end
-  // We want the top-level flex row that contains the language selector + copy link.
-  const allButtons = document.querySelectorAll("button");
-  for (const btn of allButtons) {
-    if (btn.textContent?.trim().includes("Copy link")) {
-      // Walk up to the flex row with justify-end (header actions container)
-      let el: HTMLElement | null = btn;
-      for (let i = 0; i < 8 && el; i++) {
-        el = el.parentElement;
-        if (el?.className?.includes("justify-end")) return el;
-      }
-      // Fallback: use the Copy link button's grandparent
-      return btn.parentElement?.parentElement?.parentElement as HTMLElement | null;
-    }
-  }
-  return null;
-}
-
 function injectButton(): void {
-  // Don't inject if already present
   if (document.getElementById(BUTTON_ID)) return;
-
-  // Only inject on meeting pages
   if (!isMeetingPage()) return;
 
-  const headerRow = findHeaderActionsRow();
-  if (headerRow) {
-    const downloadBtn = createDownloadButton();
-    headerRow.appendChild(downloadBtn);
-    console.log("[dl-tldv] Download button injected in header actions row");
-  } else {
-    console.log(
-      "[dl-tldv] Copy link button not found yet, will retry via observer",
-    );
-  }
+  const downloadBtn = createDownloadButton();
+  downloadBtn.classList.add("dl-tldv-btn--fixed");
+  document.body.appendChild(downloadBtn);
+  console.log("[dl-tldv] Download button injected (fixed position)");
 }
 
 function removeButton(): void {
@@ -105,26 +75,9 @@ function init(): void {
     return;
   }
 
-  // Try immediate injection
   injectButton();
 
-  // Watch for DOM changes (tldv is a SPA, elements load async)
-  const observer = new MutationObserver(() => {
-    if (isMeetingPage()) {
-      if (!document.getElementById(BUTTON_ID)) {
-        injectButton();
-      }
-    } else {
-      removeButton();
-    }
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-
-  // Also handle SPA navigation via URL changes
+  // Handle SPA navigation via URL changes
   let lastUrl = window.location.href;
   const urlObserver = new MutationObserver(() => {
     if (window.location.href !== lastUrl) {

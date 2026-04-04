@@ -1,17 +1,17 @@
 .dl-tldv-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 10px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #4F46E5;
   color: #fff;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease;
   white-space: nowrap;
   line-height: 1.4;
 }
@@ -26,7 +26,19 @@
 }
 
 .dl-tldv-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
+}
+
+.dl-tldv-btn--fixed {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 2147483647;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.dl-tldv-btn--fixed:hover {
+  transform: scale(1.05);
 }
