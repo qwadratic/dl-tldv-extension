@@ -1,6 +1,6 @@
 {
   "name": "dl-tldv-extension",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Browser extension to download tldv.io meeting recordings as MP4",
   "scripts": {
     "build": "vite build",
