@@ -1,8 +1,8 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: ['v*']
 
 jobs:
   build:
@@ -18,13 +18,8 @@ jobs:
       - run: npm run build
       - run: npm run package
 
-      - name: Upload Chrome ZIP to release
-        run: gh release upload ${{ github.event.release.tag_name }} dist/dl-tldv-chrome.zip
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Firefox ZIP to release
-        run: gh release upload ${{ github.event.release.tag_name }} dist/dl-tldv-firefox.zip
+      - name: Create GitHub release with assets
+        run: gh release create ${{ github.ref_name }} dist/dl-tldv-chrome.zip dist/dl-tldv-firefox.zip --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
