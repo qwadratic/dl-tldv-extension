@@ -1,6 +1,6 @@
 {
   "name": "dl-tldv-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Browser extension to download tldv.io meeting recordings as MP4",
   "scripts": {
     "build": "vite build",
@@ -9,7 +9,12 @@
     "package": "cd dist && zip -r dl-tldv-chrome.zip . -x '*.map' && cp dl-tldv-chrome.zip dl-tldv-firefox.zip",
     "release": "npm version patch && git push --follow-tags"
   },
-  "keywords": ["tldv", "browser-extension", "video-download", "ffmpeg-wasm"],
+  "keywords": [
+    "tldv",
+    "browser-extension",
+    "video-download",
+    "ffmpeg-wasm"
+  ],
   "author": "",
   "license": "MIT",
   "type": "module",
