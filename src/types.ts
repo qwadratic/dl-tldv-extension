@@ -2,6 +2,7 @@
 export interface DownloadMessage {
   type: "START_DOWNLOAD";
   meetingId: string;
+  authToken?: string | null;
 }
 
 export interface ProgressMessage {

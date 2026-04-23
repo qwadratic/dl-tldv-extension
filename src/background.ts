@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { fetchMeetingMetadata, fetchPlaylist } from "./pipeline/api";
+import { resolveAuthToken } from "./pipeline/auth";
 import { parsePlaylist } from "./pipeline/playlist";
 import type {
   ExtensionMessage,
@@ -56,6 +57,7 @@ browser.runtime.onInstalled.addListener(async () => {
 async function handleDownload(
   meetingId: string,
   senderTabId: number,
+  preferredToken: string | null,
 ): Promise<void> {
   const sendProgress = (current: number, total: number) => {
     const msg: ProgressMessage = {
@@ -91,16 +93,20 @@ async function handleDownload(
   };
 
   try {
+    // Step 0: Resolve Firebase auth token (prefer token forwarded from
+    // content script; fall back to scripting-injection in an open tldv tab).
+    const token = await resolveAuthToken(preferredToken);
+
     // Step 1: Fetch meeting metadata
     console.log(`[dl-tldv] Fetching metadata for meeting: ${meetingId}`);
-    const metadata = await fetchMeetingMetadata(meetingId);
+    const metadata = await fetchMeetingMetadata(meetingId, token);
     console.log(
       `[dl-tldv] Meeting: "${metadata.name}" (${metadata.createdAt})`,
     );
 
     // Step 2: Fetch obfuscated playlist
     console.log("[dl-tldv] Fetching playlist...");
-    const rawPlaylist = await fetchPlaylist(meetingId);
+    const rawPlaylist = await fetchPlaylist(meetingId, token);
 
     // Step 3: Parse and decode playlist
     console.log("[dl-tldv] Parsing playlist...");
@@ -154,6 +160,7 @@ browser.runtime.onMessage.addListener(
     const message = rawMessage as {
       type: string;
       meetingId?: string;
+      authToken?: string | null;
       stage?: string;
       current?: number;
       total?: number;
@@ -166,7 +173,7 @@ browser.runtime.onMessage.addListener(
         return;
       }
       activeDownloadTabId = tabId;
-      handleDownload(message.meetingId, tabId);
+      handleDownload(message.meetingId, tabId, message.authToken ?? null);
     }
 
     // Forward remux stage from offscreen document to the active tab

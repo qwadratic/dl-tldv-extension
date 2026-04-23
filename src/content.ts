@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import type { DownloadMessage, ExtensionMessage } from "./types";
+import { readTokenFromPageCookie } from "./pipeline/auth";
 
 const MEETING_URL_PATTERN =
   /^https:\/\/(app\.)?tldv\.io\/app\/meetings\/([a-zA-Z0-9]+)/;
@@ -31,9 +32,11 @@ function createDownloadButton(): HTMLButtonElement {
     btn.disabled = true;
     btn.querySelector("span")!.textContent = "Starting...";
 
+    const authToken = readTokenFromPageCookie();
     const message: DownloadMessage = {
       type: "START_DOWNLOAD",
       meetingId,
+      authToken,
     };
 
     try {
