@@ -20,8 +20,8 @@ Public meetings work without login. Private meetings use your existing tldv sess
 ```bash
 git clone https://github.com/qwadratic/dl-tldv-extension.git
 cd dl-tldv-extension
-npm install
-npm run build
+pnpm install
+pnpm build
 ```
 
 ### Chrome
@@ -39,10 +39,10 @@ npm run build
 ## Development
 
 ```bash
-npm run dev     # watch mode — rebuilds on file changes
-npm test        # run tests
-npm run build   # production build
-npm run package # create zip files for store submission
+pnpm dev     # watch mode — rebuilds on file changes
+pnpm test    # run tests
+pnpm build   # production build
+pnpm package # create zip files for store submission
 ```
 
 ### Stack
