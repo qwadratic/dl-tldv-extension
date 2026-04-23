@@ -59,27 +59,10 @@ async function handleDownload(
   senderTabId: number,
   preferredToken: string | null,
 ): Promise<void> {
-  const sendProgress = (current: number, total: number) => {
-    const msg: ProgressMessage = {
-      type: "DOWNLOAD_PROGRESS",
-      current,
-      total,
-    };
-    browser.tabs.sendMessage(senderTabId, msg);
-  };
-
   const sendError = (error: string) => {
     const msg: ErrorMessage = {
       type: "DOWNLOAD_ERROR",
       error,
-    };
-    browser.tabs.sendMessage(senderTabId, msg);
-  };
-
-  const sendRemuxProgress = (stage: string) => {
-    const msg: RemuxProgressMessage = {
-      type: "REMUX_PROGRESS",
-      stage,
     };
     browser.tabs.sendMessage(senderTabId, msg);
   };

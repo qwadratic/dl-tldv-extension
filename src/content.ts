@@ -116,11 +116,6 @@ browser.runtime.onMessage.addListener((rawMessage: unknown) => {
       }
       break;
 
-    case "DOWNLOAD_COMPLETE":
-      // Segments downloaded, remux starting soon
-      span.textContent = "Preparing remux...";
-      break;
-
     case "REMUX_PROGRESS": {
       // Map internal stage names to user-friendly labels
       const stageLabels: Record<string, string> = {

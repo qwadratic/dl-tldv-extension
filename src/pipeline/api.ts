@@ -3,16 +3,6 @@ import type { MeetingMetadata } from "./types";
 const API_BASE = "https://gw.tldv.io/v1";
 const PLAYLIST_BASE = "https://gaia.tldv.io/v1";
 
-/**
- * Extract meeting ID from a tldv.io meeting URL.
- * URL format: https://tldv.io/app/meetings/{meeting_id}
- * The meeting_id is the last path segment.
- */
-export function extractMeetingId(url: string): string | null {
-  const match = url.match(/\/app\/meetings\/([a-zA-Z0-9_-]+)/);
-  return match ? match[1] : null;
-}
-
 function buildAuthHeaders(token: string | null): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }

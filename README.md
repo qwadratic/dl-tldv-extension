@@ -13,7 +13,7 @@ Works with both **Chrome** and **Firefox** (Manifest V3).
 5. Remuxes segments into MP4 using [ffmpeg.wasm](https://github.com/nicedoc/ffmpegwasm) (stream copy, no re-encoding)
 6. Triggers a standard browser file download as `YYYY-MM-DD_Meeting-Name.mp4`
 
-Public meetings work without login. Private meetings use your existing tldv session (Firebase auth token).
+Public meetings work without login. Private meetings use your existing tldv session (the `tldvtoken` cookie set by tldv.io after sign-in).
 
 ## Install from source
 
@@ -62,13 +62,13 @@ src/
   content.ts          # Content script — button injection + progress UI
   styles.css          # Download button styles
   types.ts            # Message type definitions
+  offscreen.ts        # Offscreen document — concurrent segment download + ffmpeg.wasm remux
+  offscreen.html      # Offscreen document host page
   pipeline/
     api.ts            # tldv API client (metadata + playlist fetch)
-    auth.ts           # Firebase token extraction from IndexedDB
+    auth.ts           # tldvtoken cookie resolution (page + scripting fallback)
     caesar.ts         # Caesar cipher decoder
     playlist.ts       # m3u8 playlist parser + TLDVCONF decoder
-    downloader.ts     # Concurrent segment downloader
-    remux.ts          # ffmpeg.wasm remux (HLS → MP4)
     filename.ts       # Output filename builder
     types.ts          # Pipeline type definitions
 tests/
