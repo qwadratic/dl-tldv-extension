@@ -119,13 +119,10 @@ The CI workflow runs on every push/PR. The release workflow runs only on publish
 
 ## Privacy
 
-This extension:
-
-- **Collects no user data** — no analytics, no tracking, no telemetry
-- **Makes no external requests** except to tldv.io domains (to fetch meeting data and video segments)
-- **Stores nothing** — no cookies, no local storage, no user profiles
-- **Runs entirely locally** — all video processing (download + remux) happens in your browser
-- **Source code is open** — inspect everything at [github.com/qwadratic/dl-tldv-extension](https://github.com/qwadratic/dl-tldv-extension)
+- **Your meetings stay yours**: video is fetched from tldv.io and processed entirely in your browser; recording contents are never sent anywhere else
+- **Current version** makes requests only to tldv.io domains and stores no user profiles
+- **Future versions** may add anonymous usage statistics (for example, whether a download completed) to improve reliability; this section will describe exactly what is collected when that ships
+- **Source code is open**: inspect everything at [github.com/qwadratic/dl-tldv-extension](https://github.com/qwadratic/dl-tldv-extension)
 
 ## License
 
